@@ -1,5 +1,4 @@
 import java.io.*;
-import java.sql.SQLOutput;
 import java.util.*;
 import java.net.*;
 
@@ -60,7 +59,7 @@ public class Client {
 
                     try {
                         // Send M with the message using OrderMessage
-                        int[] messageId = {id, msgCounter}; // 0 sender pid, 1 message id
+                        int messageId = msgCounter; // message id
                         Object data = message; // could be anything
                         int[] timestamp = new int[]{-1}; // vector clock
                         int[][] knownMessages = new int[mSize][mSize];

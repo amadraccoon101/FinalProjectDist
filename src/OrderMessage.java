@@ -2,15 +2,15 @@ import java.io.Serializable;
  
 public class OrderMessage implements Serializable {
 
-    private int[] messageId; // 0 sender pid, 1 message id
+    private int messageId; //message id
     private Object data; // could be anything
     private int[] timestamp; // vector clock
-    private int[][] knownMessages; //
+    private int[][] knownMessages; // number of messages sent between each process
     private int sender; // pid of sender
     private int receiver; // pid of receiver
 
     public OrderMessage(){
-        messageId = new int[]{-1};
+        messageId = -1;
         data = null;
         timestamp = new int[]{-1};
         knownMessages = new int[][]{{-1}};
@@ -18,7 +18,7 @@ public class OrderMessage implements Serializable {
         receiver = -1;
     }
 
-    public OrderMessage(int[] mid, Object d, int[] ts, int[][] km, int s, int r){
+    public OrderMessage(int mid, Object d, int[] ts, int[][] km, int s, int r){
         messageId = mid;
         data = d;
         timestamp = ts;
@@ -35,7 +35,7 @@ public class OrderMessage implements Serializable {
         return receiver;
     }
 
-    public int[] getMessageId() {
+    public int getMessageId() {
         return messageId;
     }
 
