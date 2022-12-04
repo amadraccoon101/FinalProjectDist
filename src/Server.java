@@ -25,6 +25,10 @@ public class Server {
 
                 System.out.println("Creating a new handler for this process...");
 
+                // Send process ID to client
+                out.writeInt(counter);
+                out.flush();
+
                 // Create a new client handler
                 ClientHandler client = new ClientHandler(s,"p" + counter, in, out);
                 Thread t = new Thread(client);
@@ -57,40 +61,41 @@ class ClientHandler implements Runnable {
 
     @Override
 	public void run() {
-        String messageReceived;
+        OrderMessage receivedMessage;
         while(true){
             try {
-                messageReceived = in.readUTF();
-                System.out.println("Received: " + messageReceived + " from: " + name);
+                Object rm = in.readObject(); 
+                receivedMessage = (OrderMessage) rm;
+                String messageData = (String) receivedMessage.getData();
 
-                if(messageReceived.equals("logout")){
+                System.out.println("Received: " + messageData + " from: " + name);
+
+                if(messageData.equals("logout")){
                     this.isLoggedIn = false;
                     this.s.close();
                     break;
                 }
 
-                StringTokenizer st = new StringTokenizer(messageReceived, "#");
+                StringTokenizer st = new StringTokenizer(messageData, "#");
                 String firstStr = st.nextToken();
                 String recipient = "";
                 String msgToSend = "";
+
                 if(firstStr.equals("d")){ // d#px#msg
                     recipient = st.nextToken();
                     msgToSend = st.nextToken();
-                    DelayHandler d = new DelayHandler(recipient, msgToSend);
+                    DelayHandler d = new DelayHandler(recipient, msgToSend, rm);
                     Thread t = new Thread(d);
                     t.start();
-                }
-                else{
+                }else{
                     recipient = firstStr;
                     msgToSend = st.nextToken();
                     Boolean fin = false;
 
-                    //OrderMessage om = new OrderMessage();
-
                     for (ClientHandler ch: Server.clientList){
                         if (ch.name.equals(recipient) && ch.isLoggedIn){
-                            ch.out.writeUTF(this.name + ": " + msgToSend);
-                            //ch.out.writeObject(om);
+                            //ch.out.writeUTF(this.name + ": " + msgToSend);
+                            ch.out.writeObject(rm);
                             ch.out.flush();
                             fin = true;
                             break;
@@ -98,12 +103,13 @@ class ClientHandler implements Runnable {
                     }
 
                     if(!fin){
-                        out.writeUTF("Recipient not found.");
+                        out.writeObject("Recipient not found.");
                         out.flush();
                     }
                 }
-
-            }catch(IOException e){
+            }catch (IOException e){
+                e.printStackTrace();
+            } catch (ClassNotFoundException e){
                 e.printStackTrace();
             }
         }
@@ -121,10 +127,12 @@ class ClientHandler implements Runnable {
 class DelayHandler implements Runnable {
     private String recepient;
     private String msgToSend;
+    private Object rm;
 
-    public DelayHandler(String recepient, String mr){
+    public DelayHandler(String recepient, String mr, Object rm){
         this.recepient = recepient;
         msgToSend = mr;
+        this.rm = rm;
     }
 
     @Override
@@ -139,13 +147,12 @@ class DelayHandler implements Runnable {
         try {
             String recipient = this.recepient;
             String msgToSend = this.msgToSend;
-            Boolean fin = false;
 
             for (ClientHandler ch: Server.clientList){
                 if (ch.name.equals(recipient) && ch.isLoggedIn){
-                    ch.out.writeUTF(this.recepient + ": " + msgToSend);
+                    //ch.out.writeUTF(this.recepient + ": " + msgToSend);
+                    ch.out.writeObject(rm);
                     ch.out.flush();
-                    fin = true;
                     break;
                 }
             }

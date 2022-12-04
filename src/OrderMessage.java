@@ -1,4 +1,6 @@
-public class OrderMessage {
+import java.io.Serializable;
+ 
+public class OrderMessage implements Serializable {
 
     private int[] messageId; // 0 sender pid, 1 message id
     private Object data; // could be anything
