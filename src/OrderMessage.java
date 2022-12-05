@@ -8,6 +8,7 @@ public class OrderMessage implements Serializable {
     private int[][] knownMessages; // number of messages sent between each process
     private int sender; // pid of sender
     private int receiver; // pid of receiver
+    private int[] multicast; // pids of all messages that need to be multicasted to 
 
     public OrderMessage(){
         messageId = -1;
@@ -16,15 +17,17 @@ public class OrderMessage implements Serializable {
         knownMessages = new int[][]{{-1}};
         sender = -1;
         receiver = -1;
+        multicast = new int[]{};
     }
 
-    public OrderMessage(int mid, Object d, int[] ts, int[][] km, int s, int r){
+    public OrderMessage(int mid, Object d, int[] ts, int[][] km, int s, int r, int[] mc){
         messageId = mid;
         data = d;
         timestamp = ts;
         knownMessages = km;
         sender = s;
         receiver = r;
+        multicast = mc;
     }
 
     public Object getData(){
@@ -48,6 +51,10 @@ public class OrderMessage implements Serializable {
     }
 
     public int getSender() {
+        return sender;
+    }
+
+    public int getMulticast() {
         return sender;
     }
 }
