@@ -9,6 +9,7 @@ public class OrderMessage implements Serializable {
     private int sender; // pid of sender
     private int receiver; // pid of receiver
     private int[] multicast; // pids of all messages that need to be multicasted to 
+    private boolean deliverable; // marks a message as deliverable
 
     public OrderMessage(){
         messageId = -1;
@@ -18,9 +19,10 @@ public class OrderMessage implements Serializable {
         sender = -1;
         receiver = -1;
         multicast = new int[]{};
+        deliverable = false;
     }
 
-    public OrderMessage(int mid, Object d, int[] ts, int[][] km, int s, int r, int[] mc){
+    public OrderMessage(int mid, Object d, int[] ts, int[][] km, int s, int r, int[] mc, boolean de){
         messageId = mid;
         data = d;
         timestamp = ts;
@@ -28,6 +30,7 @@ public class OrderMessage implements Serializable {
         sender = s;
         receiver = r;
         multicast = mc;
+        deliverable = de;
     }
 
     public Object getData(){
@@ -56,5 +59,9 @@ public class OrderMessage implements Serializable {
 
     public int getMulticast() {
         return sender;
+    }
+
+    public boolean getDeliverable() {
+        return deliverable;
     }
 }

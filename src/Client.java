@@ -71,9 +71,10 @@ public class Client {
                         int sender = id; // pid of sender
                         int receiver = j; //pid of receiver
                         int[] multicast = new int[]{};
+                        boolean deliverable = true;
 
                         OrderMessage om = new OrderMessage(messageId, data, timestamp,
-                                            knownMessages, sender, receiver, multicast);
+                                            knownMessages, sender, receiver, multicast, deliverable);
 
                         // Increment message counter                    
                         msgCounter++;
